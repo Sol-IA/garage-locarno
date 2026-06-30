@@ -106,7 +106,7 @@ def topbar():
 def nav():
     return (
 '<nav id="nav" aria-label="Navigation principale"><div class="container">'
-'<a href="index.html" class="nav__logo" aria-label="Garage Locarno, accueil"><img src="assets/logo.png" alt="Garage Locarno" width="122" height="42" loading="eager"></a>'
+'<a href="index.html" class="nav__logo" aria-label="Garage Locarno, accueil"><img src="assets/logo.png?v=2" alt="Garage Locarno" width="122" height="42" loading="eager"></a>'
 '<div class="nav__menu" id="nav-menu">'
 '<a href="index.html">Accueil</a>'
 '<div class="nav__dropdown"><a href="index.html#prestations">Services auto</a><div class="nav__dropdown-menu">'
@@ -129,7 +129,7 @@ def nav():
 def footer():
     return (
 '<footer><div class="container"><div class="footer-grid">'
-'<div class="footer__brand"><img src="assets/logo.png" alt="Garage Locarno" width="160" height="55" class="footer__logo" loading="lazy">'
+'<div class="footer__brand"><img src="assets/logo.png?v=2" alt="Garage Locarno" width="160" height="55" class="footer__logo" loading="lazy">'
 '<p>Garage automobile et moto toutes marques à Marseille 5e, en centre-ville. Entretien, réparation, révision, pneus et diagnostic. Devis gratuit, et on vous explique tout avant d\'intervenir.</p></div>'
 '<nav class="footer__col" aria-label="Services"><p class="footer__title">Services</p><ul class="footer__links">'
 '<li><a href="entretien-revision.html">Entretien &amp; révision</a></li>'

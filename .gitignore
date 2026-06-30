@@ -1,0 +1,5 @@
+.DS_Store
+*.log
+# Secrets PHP (phase 2 prod, jamais sur GitHub)
+php/config.php
+php/ratelimit.php

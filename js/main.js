@@ -1,0 +1,166 @@
+/* ============================================
+   GARAGE LOCARNO — Scripts principaux (vanilla, defer)
+   ============================================ */
+
+/* --- Nav : ombre au scroll --- */
+(function () {
+  var nav = document.getElementById('nav');
+  if (!nav) return;
+  var onScroll = function () { nav.classList.toggle('scrolled', window.scrollY > 30); };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+
+/* --- Menu mobile (hamburger) --- */
+(function () {
+  var toggle = document.getElementById('nav-toggle');
+  var menu = document.getElementById('nav-menu');
+  if (!toggle || !menu) return;
+  toggle.addEventListener('click', function () {
+    var open = menu.classList.toggle('active');
+    document.body.style.overflow = open ? 'hidden' : '';
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    toggle.setAttribute('aria-label', open ? 'Fermer le menu' : 'Ouvrir le menu');
+  });
+  menu.querySelectorAll('a').forEach(function (a) {
+    a.addEventListener('click', function () {
+      menu.classList.remove('active');
+      document.body.style.overflow = '';
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', 'Ouvrir le menu');
+    });
+  });
+})();
+
+/* --- Reveal au scroll --- */
+(function () {
+  var els = document.querySelectorAll('.reveal');
+  if (!els.length) return;
+  if (!('IntersectionObserver' in window)) {
+    els.forEach(function (el) { el.classList.add('is-visible'); });
+    return;
+  }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { e.target.classList.add('is-visible'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+  els.forEach(function (el) { io.observe(el); });
+})();
+
+/* --- Carousel avis --- */
+(function () {
+  var carousel = document.getElementById('testimonials-carousel');
+  if (!carousel) return;
+  var track = carousel.querySelector('.testimonials-track');
+  var slides = track ? track.children : [];
+  if (!slides.length) return;
+  var prev = carousel.querySelector('#carousel-prev');
+  var next = carousel.querySelector('#carousel-next');
+  var dotsWrap = carousel.querySelector('#carousel-dots');
+  var idx = 0, timer = null;
+
+  var dots = [];
+  if (dotsWrap) {
+    for (var i = 0; i < slides.length; i++) {
+      var d = document.createElement('button');
+      d.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+      d.setAttribute('aria-label', 'Avis ' + (i + 1));
+      (function (n) { d.addEventListener('click', function () { go(n); }); })(i);
+      dotsWrap.appendChild(d); dots.push(d);
+    }
+  }
+  function render() {
+    track.style.transform = 'translateX(-' + (idx * 100) + '%)';
+    dots.forEach(function (d, n) { d.classList.toggle('active', n === idx); });
+  }
+  function go(n) { idx = (n + slides.length) % slides.length; render(); }
+  function auto() { timer = setInterval(function () { go(idx + 1); }, 5500); }
+  function stop() { if (timer) clearInterval(timer); }
+  if (prev) prev.addEventListener('click', function () { go(idx - 1); stop(); auto(); });
+  if (next) next.addEventListener('click', function () { go(idx + 1); stop(); auto(); });
+  carousel.addEventListener('mouseenter', stop);
+  carousel.addEventListener('mouseleave', auto);
+  render(); auto();
+})();
+
+/* --- Galerie : lightbox --- */
+(function () {
+  var items = document.querySelectorAll('.gallery-item[data-full]');
+  if (!items.length) return;
+  var box = document.createElement('div');
+  box.className = 'lightbox';
+  box.style.cssText = 'position:fixed;inset:0;z-index:3000;background:rgba(20,17,13,.92);display:none;align-items:center;justify-content:center;padding:2rem';
+  box.innerHTML = '<button aria-label="Fermer" style="position:absolute;top:1rem;right:1.5rem;font-size:2.5rem;color:#fff;background:none;line-height:1">&times;</button><img alt="" style="max-width:92vw;max-height:86vh;border-radius:8px">';
+  document.body.appendChild(box);
+  var img = box.querySelector('img');
+  var close = box.querySelector('button');
+  function open(src, alt) { img.src = src; img.alt = alt || ''; box.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+  function hide() { box.style.display = 'none'; document.body.style.overflow = ''; }
+  items.forEach(function (it) {
+    it.addEventListener('click', function () { open(it.getAttribute('data-full'), it.getAttribute('data-caption')); });
+  });
+  close.addEventListener('click', hide);
+  box.addEventListener('click', function (e) { if (e.target === box) hide(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hide(); });
+})();
+
+/* --- Articles connexes (blog, fallback statique conservé) --- */
+(function () {
+  var related = document.querySelector('[data-related]');
+  if (!related) return;
+  var path = window.location.pathname;
+  var basePath = '';
+  fetch('articles.json')
+    .then(function (r) { return r.json(); })
+    .then(function (articles) {
+      var currentSlug = path.split('/').pop();
+      if (currentSlug && currentSlug.indexOf('.html') === -1) currentSlug += '.html';
+      var others = articles.filter(function (a) { return a.slug !== currentSlug; });
+      for (var i = others.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = others[i]; others[i] = others[j]; others[j] = tmp;
+      }
+      var picks = others.slice(0, 2);
+      if (!picks.length) return;
+      var frag = document.createDocumentFragment();
+      picks.forEach(function (a) {
+        var card = document.createElement('a');
+        card.href = basePath + a.slug; card.className = 'service-card';
+        var body = document.createElement('div'); body.className = 'service-card__body';
+        if (a.tag) { var tag = document.createElement('span'); tag.className = 'service-card__cta'; tag.textContent = a.tag; body.appendChild(tag); }
+        var title = document.createElement('h3'); title.textContent = a.title; body.appendChild(title);
+        if (a.desc) { var ex = document.createElement('p'); ex.textContent = a.desc; body.appendChild(ex); }
+        card.appendChild(body); frag.appendChild(card);
+      });
+      while (related.firstChild) related.removeChild(related.firstChild);
+      related.appendChild(frag);
+    })
+    .catch(function () { });
+})();
+
+/* --- Formulaire contact (Formspree en V1, feedback bouton) --- */
+(function () {
+  var form = document.getElementById('contactForm');
+  if (!form) return;
+  form.addEventListener('submit', function () {
+    var btn = form.querySelector('button[type="submit"]');
+    if (btn) { btn.textContent = 'Envoi en cours...'; btn.disabled = true; }
+  });
+  var params = new URLSearchParams(window.location.search);
+  var statut = params.get('statut');
+  var status = document.getElementById('formStatus');
+  if (statut && status) {
+    if (statut === 'ok') {
+      status.textContent = 'Merci, votre demande a bien été envoyée. Nous vous rappelons rapidement.';
+      status.className = 'form__message form__message--success';
+      form.reset();
+    } else if (statut === 'erreur') {
+      status.textContent = 'Une erreur est survenue. Réessayez ou appelez-nous au 09 84 28 23 20.';
+      status.className = 'form__message form__message--error';
+    }
+    var anchor = document.getElementById('formulaire');
+    if (anchor) anchor.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    window.history.replaceState({}, '', window.location.pathname);
+  }
+})();

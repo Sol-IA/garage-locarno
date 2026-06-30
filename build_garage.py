@@ -106,7 +106,7 @@ def topbar():
 def nav():
     return (
 '<nav id="nav" aria-label="Navigation principale"><div class="container">'
-'<a href="index.html" class="nav__logo" aria-label="Garage Locarno, accueil">%s<span>Garage Locarno</span></a>'
+'<a href="index.html" class="nav__logo" aria-label="Garage Locarno, accueil"><img src="assets/logo.png" alt="Garage Locarno" width="122" height="42" loading="eager"></a>'
 '<div class="nav__menu" id="nav-menu">'
 '<a href="index.html">Accueil</a>'
 '<div class="nav__dropdown"><a href="index.html#prestations">Services auto</a><div class="nav__dropdown-menu">'
@@ -124,12 +124,12 @@ def nav():
 '<a href="tel:%s" class="nav__phone">%s %s</a>'
 '<a href="contact.html" class="btn-cta-nav">Devis gratuit</a></div>'
 '<button class="nav__toggle" id="nav-toggle" aria-label="Ouvrir le menu" aria-expanded="false"><span></span><span></span><span></span></button>'
-'</div></nav>' % (LOGO_MARK, PHONE_TEL, svg_phone(), PHONE_DISPLAY))
+'</div></nav>' % (PHONE_TEL, svg_phone(), PHONE_DISPLAY))
 
 def footer():
     return (
 '<footer><div class="container"><div class="footer-grid">'
-'<div class="footer__brand"><div class="nav__logo">%s<span>Garage Locarno</span></div>'
+'<div class="footer__brand"><img src="assets/logo.png" alt="Garage Locarno" width="160" height="55" class="footer__logo" loading="lazy">'
 '<p>Garage automobile et moto toutes marques à Marseille 5e, en centre-ville. Entretien, réparation, révision, pneus et diagnostic. Devis gratuit, et on vous explique tout avant d\'intervenir.</p></div>'
 '<nav class="footer__col" aria-label="Services"><p class="footer__title">Services</p><ul class="footer__links">'
 '<li><a href="entretien-revision.html">Entretien &amp; révision</a></li>'
@@ -152,7 +152,7 @@ def footer():
 '</div><div class="footer__bottom">'
 '<p>&copy; 2026 Garage Locarno &middot; Site réalisé par <a href="https://sol-ia.tech" target="_blank" rel="noopener">Sol&middot;IA</a></p>'
 '<p><a href="mentions-legales.html">Mentions légales</a> &middot; <a href="politique-confidentialite.html">Confidentialité</a></p>'
-'</div></div></footer>' % (LOGO_MARK, PHONE_TEL, PHONE_DISPLAY, EMAIL, EMAIL))
+'</div></div></footer>' % (PHONE_TEL, PHONE_DISPLAY, EMAIL, EMAIL))
 
 def mobile_cta():
     return (
